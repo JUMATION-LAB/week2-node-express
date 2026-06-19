@@ -6,6 +6,13 @@ const path = require('path');
 const PORT = process.env.PORT
 app.use(express.json());
 
+
+//Middleware to handle requests
+app.use((err , req , res , next)=>{
+    console.log(`The ${req.method},at ${new Date()}`);
+    next();
+})
+
 app.use(express.static(path.join(__dirname, 'public' )))
 
 //URL - http://localhost:3000 
