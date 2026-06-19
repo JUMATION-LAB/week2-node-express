@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium User Profile UI</title>
+    <!-- FontAwesome for Social Media Icons -->
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* CSS Variables for Easy Theme Switching */
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --accent: #4f46e5;
+            --accent-hover: #4338ca;
+            --border-color: #e5e7eb;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Theme Variables triggered by checkbox */
+        body:has(#theme-toggle:checked) {
+            --bg-body: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --border-color: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Base & Reset Layout */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        /* Main Profile Container */
+        .profile-card {
+            background-color: var(--bg-card);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        /* TOP TOOLBAR: Theme Switcher */
+        .card-toolbar {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+        }
+
+        .theme-label {
+            background: rgba(25px, 25px, 25px, 0.2);
+            backdrop-filter: blur(8px);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            color: #ffffff;
+        }
+
+        /* Toggle icon logic */
+        #theme-toggle { display: none; }
+        .fa-sun { display: none; }
+        #theme-toggle:checked + .theme-label .fa-moon { display: none; }
+        #theme-toggle:checked + .theme-label .fa-sun { display: block; }
+
+        /* Banner Graphic Background */
+        .card-banner {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            height: 140px;
+            position: relative;
+        }
+
+        /* Avatar Container & Online Status Indicator */
+        .avatar-wrapper {
+            width: 120px;
+            height: 120px;
+            margin: -60px auto 16px auto;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--bg-card);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            width: 18px;
+            height: 18px;
+            background-color: #10b981;
+            border: 3px solid var(--bg-card);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+        }
+
+        /* Typography & Core Content */
+        .profile-content {
+            padding: 0 24px 24px 24px;
+            text-align: center;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .user-title {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .user-bio {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+
+        /* FEATURE 1: Profile Counters / Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
+            margin-bottom: 20px;
+        }
+
+        .metric-item-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-item-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* FEATURE 2: Interactive Skill Pill Badges */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .skill-badge {
+            background-color: var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: default;
+        }
+
+        .skill-badge:hover {
+            background-color: var(--accent);
+            color: #ffffff;
+        }
+
+        /* FEATURE 3: Connected Social Media Icon Tray */
+        .social-tray {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .social-link {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            text-decoration: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-link:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        /* CTA Primary Action Button */
+        .cta-btn {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .cta-btn:hover {
+            background-color: var(--accent-hover);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-card">
+        <!-- Top Toolbar with Feature Toggle Switch -->
+        <div class="card-toolbar">
+            <input type="checkbox" id="theme-toggle">
+            <label for="theme-toggle" class="theme-label" title="Toggle Light/Dark Theme">
+                <i class="fa-solid fa-moon"></i>
+                <i class="fa-solid fa-sun"></i>
+            </label>
+        </div>
+
+        <!-- Visual Top Graphic Banner -->
+        <div class="card-banner"></div>
+        
+        <!-- Profile Picture & Active Status Indicator -->
+        <div class="avatar-wrapper">
+            <img class="profile-img" src="https://avatarfiles.alphacoders.com/125/thumb-1920-125198.jpg" alt="User Profile Picture">
+            <div class="status-badge" title="Online Status"></div>
+        </div>
+        
+        <!-- Core Profile Contents -->
+        <div class="profile-content">
+            <h2 class="user-name">Alex Morgan</h2>
+            <p class="user-title">Senior UI/UX Architect</p>
+            <p class="user-bio">Designing structural web interactions and accessible design systems. Creating useful workflows for product developer toolkits worldwide.</p>
+            
+            <!-- Metric Counter Data -->
+            <div class="metrics-grid">
+                <div>
+                    <div class="metric-item-val">14.2k</div>
+                    <div class="metric-item-lbl">Followers</div>
+                </div>
+                <div>
+                    <div class="metric-item-val">128</div>
+                    <div class="metric-item-lbl">Projects</div>
+                </div>
+                <div>
+                    <div class="metric-item-val">4.9</div>
+                    <div class="metric-item-lbl">Rating</div>
+                </div>
+            </div>
+
+            <!-- Interactive Skill Tags -->
+            <div class="skills-container">
+                <span class="skill-badge">Figma</span>
+                <span class="skill-badge">CSS Grid</span>
+                <span class="skill-badge">TypeScript</span>
+                <span class="skill-badge">Web Accessibility</span>
+            </div>
+
+            <!-- Connected Social Accounts Tray -->
+            <div class="social-tray">
+                <a href="#" class="social-link" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a href="#" class="social-link" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="#" class="social-link" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="#" class="social-link" title="Dribbble"><i class="fa-brands fa-dribbble"></i></a>
+            </div>
+            
+            <!-- Action Trigger Button -->
